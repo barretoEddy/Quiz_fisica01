@@ -1,0 +1,319 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Admin — Quiz Física</title>
+  <style>
+    body{font-family:system-ui,Arial;padding:20px;background:#0f1724;color:#e6eef8}
+    .wrap{max-width:900px;margin:0 auto;background:#071226;padding:18px;border-radius:12px}
+    input,textarea,select{width:100%;padding:8px;margin:6px 0;border-radius:6px;border:1px solid rgba(255,255,255,0.06);background:transparent;color:inherit}
+    button{padding:8px 12px;border-radius:8px;border:none;background:#185FA5;color:#fff;cursor:pointer}
+    .row{display:flex;gap:12px}
+    .col{flex:1}
+    .list{margin-top:12px}
+    .item{padding:10px;border-radius:8px;background:rgba(255,255,255,0.02);margin-bottom:8px}
+    .muted{color:#9aa6b2;font-size:13px}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <h2>Admin — Quiz de Física</h2>
+    <div id="status" class="muted">Carregando...</div>
+
+    <div id="auth">
+      <h3>Login</h3>
+      <input id="email" placeholder="Seu e-mail de admin">
+      <button id="btn-send">Enviar link mágico</button>
+      <div class="muted">Faça login com o mesmo e-mail configurado no Supabase.</div>
+    </div>
+
+    <div id="panel" style="display:none">
+      <div style="margin-bottom:14px;padding:12px;border:1px solid rgba(255,255,255,0.06);border-radius:10px;background:rgba(255,255,255,0.02)">
+        <div><strong>Usuário autenticado</strong></div>
+        <div class="muted" id="user-email"></div>
+        <div class="muted" style="word-break:break-all;margin-top:4px">ID: <span id="user-id"></span></div>
+        <div style="margin-top:8px">
+          <button id="btn-copy-user-id" type="button">Copiar user_id</button>
+        </div>
+      </div>
+      <h3>Nova questão</h3>
+      <input id="topic" placeholder="Tópico (ex: MRUV)">
+      <textarea id="text" rows="3" placeholder="Enunciado"></textarea>
+      <textarea id="options" rows="3" placeholder="Uma alternativa por linha"></textarea>
+      <input id="correct_index" placeholder="Índice correto (0 = primeira)">
+      <input id="explanation" placeholder="Explicação (opcional)">
+      <div class="row">
+        <div class="col"><input id="sort_order" placeholder="Ordem (num)" type="number"></div>
+        <div class="col"><label><input id="active" type="checkbox" checked> Ativa</label></div>
+      </div>
+      <div style="margin-top:8px">
+        <button id="btn-save">Salvar questão</button>
+        <button id="btn-clear" style="background:transparent;border:1px solid rgba(255,255,255,0.06);margin-left:8px">Limpar</button>
+      </div>
+
+      <h3 style="margin-top:18px">Questões existentes</h3>
+      <div id="list" class="list"></div>
+    </div>
+  </div>
+
+  <script src="supabase-config.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script>
+    const statusEl = document.getElementById('status');
+    const authEl = document.getElementById('auth');
+    const panelEl = document.getElementById('panel');
+    const listEl = document.getElementById('list');
+    const userEmailEl = document.getElementById('user-email');
+    const userIdEl = document.getElementById('user-id');
+    const btnCopyUserId = document.getElementById('btn-copy-user-id');
+    const btnSend = document.getElementById('btn-send');
+    let magicLinkCooldownUntil = 0;
+    let magicLinkCooldownTimer = null;
+    const MAGIC_LINK_COOLDOWN_KEY = 'quizFisica.magicLinkCooldownUntil';
+
+    function saveCooldownUntil(value){
+      magicLinkCooldownUntil = value;
+      try {
+        localStorage.setItem(MAGIC_LINK_COOLDOWN_KEY, String(value));
+      } catch (error) {
+        // ignore storage failures
+      }
+    }
+
+    function readCooldownUntil(){
+      try {
+        const storedValue = Number(localStorage.getItem(MAGIC_LINK_COOLDOWN_KEY) || 0);
+        return Number.isFinite(storedValue) ? storedValue : 0;
+      } catch (error) {
+        return 0;
+      }
+    }
+
+    function stopCooldownTimer(){
+      if (magicLinkCooldownTimer) {
+        clearInterval(magicLinkCooldownTimer);
+        magicLinkCooldownTimer = null;
+      }
+    }
+
+    function updateMagicLinkButtonState(){
+      const now = Date.now();
+      const remainingMs = magicLinkCooldownUntil - now;
+      if (remainingMs > 0) {
+        const remainingSeconds = Math.ceil(remainingMs / 1000);
+        btnSend.disabled = true;
+        btnSend.textContent = `Aguarde ${remainingSeconds}s`;
+        return;
+      }
+      btnSend.disabled = false;
+      btnSend.textContent = 'Enviar link mágico';
+      if (magicLinkCooldownUntil > 0) {
+        saveCooldownUntil(0);
+      }
+      stopCooldownTimer();
+    }
+
+    function startCooldown(seconds){
+      saveCooldownUntil(Date.now() + (seconds * 1000));
+      updateMagicLinkButtonState();
+      stopCooldownTimer();
+      magicLinkCooldownTimer = setInterval(updateMagicLinkButtonState, 1000);
+    }
+
+    function hasSupabaseConfig(){
+      return window.SUPABASE_URL && window.SUPABASE_ANON_KEY && !window.SUPABASE_URL.includes('your-project-ref');
+    }
+
+    if (!hasSupabaseConfig()){
+      statusEl.textContent = 'Preencha supabase-config.js com URL e anon key antes de usar o admin.';
+      authEl.style.display = 'none';
+      throw new Error('Supabase not configured');
+    }
+
+    magicLinkCooldownUntil = readCooldownUntil();
+    updateMagicLinkButtonState();
+
+    const supabaseClient = window.supabase.createClient(window.SUPABASE_URL, window.SUPABASE_ANON_KEY);
+
+    function setSignedOutState(){
+      authEl.style.display = 'block';
+      panelEl.style.display = 'none';
+      statusEl.textContent = 'Não autenticado';
+      userEmailEl.textContent = '';
+      userIdEl.textContent = '';
+    }
+
+    function setSignedInState(session){
+      authEl.style.display = 'none';
+      panelEl.style.display = 'block';
+      statusEl.textContent = `Conectado: ${session.user.email}`;
+      userEmailEl.textContent = session.user.email || '';
+      userIdEl.textContent = session.user.id || '';
+    }
+
+    function getEmailRedirectTo(){
+      if (window.location.protocol !== 'http:' && window.location.protocol !== 'https:') return '';
+      return window.location.href.split('#')[0].split('?')[0];
+    }
+
+    async function sendMagicLink(){
+      const email = document.getElementById('email').value.trim();
+      if (!email) return alert('Informe um e-mail');
+      const now = Date.now();
+      if (now < magicLinkCooldownUntil) {
+        const remainingSeconds = Math.ceil((magicLinkCooldownUntil - now) / 1000);
+        statusEl.textContent = `Aguarde ${remainingSeconds}s antes de pedir outro link.`;
+        return;
+      }
+      const redirectTo = getEmailRedirectTo();
+      if (!redirectTo){
+        statusEl.textContent = 'Para o magic link voltar ao admin, abra esta página via HTTP(S) ou GitHub Pages. Em file:// o Supabase não consegue redirecionar de volta.';
+        return;
+      }
+      btnSend.disabled = true;
+      statusEl.textContent = 'Enviando link mágico...';
+      const { error } = await supabaseClient.auth.signInWithOtp({
+        email,
+        options: {
+          emailRedirectTo: redirectTo,
+        },
+      });
+      if (error) {
+        if (error.status === 429 || error.statusCode === 429 || (error.message && error.message.toLowerCase().includes('rate limit'))) {
+          startCooldown(60);
+          statusEl.textContent = 'Você pediu muitos links seguidos. Aguarde 60 segundos e tente novamente.';
+          return;
+        }
+        btnSend.disabled = false;
+        statusEl.textContent = 'Erro enviando link: ' + error.message;
+        return;
+      }
+      startCooldown(60);
+      statusEl.textContent = 'Link enviado. Verifique seu e-mail.';
+    }
+
+    btnSend.addEventListener('click', sendMagicLink);
+
+    async function syncAuthState(){
+      try {
+        const { data: { session } } = await supabaseClient.auth.getSession();
+        if (session && session.user) {
+          setSignedInState(session);
+          await loadQuestions();
+          return;
+        }
+        setSignedOutState();
+      } catch (error) {
+        statusEl.textContent = 'Erro de auth: ' + error.message;
+        authEl.style.display = 'block';
+        panelEl.style.display = 'none';
+      }
+    }
+
+    supabaseClient.auth.onAuthStateChange((_event, session) => {
+      if (session && session.user) {
+        setSignedInState(session);
+        loadQuestions();
+      } else {
+        setSignedOutState();
+      }
+    });
+
+    window.addEventListener('focus', updateMagicLinkButtonState);
+
+    btnCopyUserId.addEventListener('click', async () => {
+      const value = userIdEl.textContent.trim();
+      if (!value) return alert('Faça login primeiro para obter o user_id.');
+      try {
+        await navigator.clipboard.writeText(value);
+        statusEl.textContent = 'user_id copiado para a área de transferência';
+      } catch (error) {
+        alert('Não foi possível copiar automaticamente. Copie manualmente o ID exibido.');
+      }
+    });
+
+    async function loadQuestions(){
+      statusEl.textContent = 'Carregando questões...';
+      const { data, error } = await supabaseClient.from('questions').select('*').order('sort_order', { ascending: true }).order('id', { ascending: true });
+      if (error) { statusEl.textContent = 'Erro carregando: '+error.message; return }
+      renderList(data || []);
+      statusEl.textContent = 'Pronto';
+    }
+
+    function renderList(items){
+      listEl.innerHTML = '';
+      items.forEach(it => {
+        const div = document.createElement('div'); div.className='item';
+        div.innerHTML = `<div style="display:flex;justify-content:space-between;align-items:center">
+          <div><strong>${it.topic}</strong> <span class="muted">#${it.id}</span><div class="muted">${it.text}</div></div>
+          <div style="text-align:right">
+            <button data-id="${it.id}" data-action="edit">Editar</button>
+            <button data-id="${it.id}" data-action="del" style="background:#A32D2D;margin-left:6px">Excluir</button>
+          </div>
+        </div>`;
+        listEl.appendChild(div);
+      });
+      listEl.querySelectorAll('button').forEach(btn=>btn.addEventListener('click', onListAction));
+    }
+
+    async function onListAction(e){
+      const id = e.currentTarget.getAttribute('data-id');
+      const action = e.currentTarget.getAttribute('data-action');
+      if (action === 'del'){
+        if (!confirm('Excluir essa questão?')) return;
+        const { error } = await supabaseClient.from('questions').delete().eq('id', id);
+        if (error) return alert('Erro: '+error.message);
+        loadQuestions();
+      } else if (action === 'edit'){
+        const { data, error } = await supabaseClient.from('questions').select('*').eq('id', id).single();
+        if (error) return alert('Erro: '+error.message);
+        populateForm(data);
+      }
+    }
+
+    function populateForm(q){
+      document.getElementById('topic').value = q.topic || '';
+      document.getElementById('text').value = q.text || '';
+      document.getElementById('options').value = (Array.isArray(q.options) ? q.options.join('\n') : (q.options || ''));
+      document.getElementById('correct_index').value = q.correct_index ?? q.correct ?? '';
+      document.getElementById('explanation').value = q.explanation || '';
+      document.getElementById('sort_order').value = q.sort_order ?? '';
+      document.getElementById('active').checked = q.active !== false;
+      document.getElementById('btn-save').setAttribute('data-edit-id', q.id);
+    }
+
+    document.getElementById('btn-clear').addEventListener('click', ()=>{
+      document.getElementById('btn-save').removeAttribute('data-edit-id');
+      document.getElementById('topic').value='';document.getElementById('text').value='';document.getElementById('options').value='';document.getElementById('correct_index').value='';document.getElementById('explanation').value='';document.getElementById('sort_order').value='';document.getElementById('active').checked=true;
+    });
+
+    async function saveQuestion(){
+      const editId = document.getElementById('btn-save').getAttribute('data-edit-id');
+      const topic = document.getElementById('topic').value.trim();
+      const text = document.getElementById('text').value.trim();
+      const options = document.getElementById('options').value.split('\n').map(s=>s.trim()).filter(Boolean);
+      const correct_index = parseInt(document.getElementById('correct_index').value,10);
+      const explanation = document.getElementById('explanation').value.trim();
+      const sort_order = parseInt(document.getElementById('sort_order').value,10) || 0;
+      const active = !!document.getElementById('active').checked;
+      if (!topic || !text || options.length < 2 || !Number.isInteger(correct_index)) return alert('Preencha todos os campos corretamente (opções >=2, índice correto inteiro).');
+      const payload = { topic, text, options, correct_index, explanation, active, sort_order };
+      if (editId){
+        const { error } = await supabaseClient.from('questions').update(payload).eq('id', editId).select();
+        if (error) return alert('Erro atualizando: '+error.message);
+      } else {
+        const { error } = await supabaseClient.from('questions').insert([payload]).select();
+        if (error) return alert('Erro inserindo: '+error.message);
+      }
+      document.getElementById('btn-save').removeAttribute('data-edit-id');
+      loadQuestions();
+    }
+
+    document.getElementById('btn-save').addEventListener('click', saveQuestion);
+
+    // inicialização
+    syncAuthState();
+  </script>
+</body>
+</html>

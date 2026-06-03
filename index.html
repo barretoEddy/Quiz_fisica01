@@ -81,8 +81,10 @@
   <div id="quiz-area" aria-live="polite"></div>
 </div>
 
+<script src="supabase-config.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
-const questions = [
+const DEFAULT_QUESTIONS = [
   {
     topic: "Velocidade Média",
     text: "Um carro percorre 120 km em 1,5 h e depois mais 60 km em 0,5 h. Qual é a velocidade média em todo o percurso?",
@@ -141,12 +143,31 @@ const questions = [
   }
 ];
 
-let current = 0;
-let score = 0;
-let answered = false;
-let userAnswers = [];
-const topicScores = {};
-let shuffledOptions = null;
+const SUPABASE_URL = window.SUPABASE_URL || '';
+const SUPABASE_ANON_KEY = window.SUPABASE_ANON_KEY || '';
+const SUPABASE_TABLE = 'questions';
+const QUESTIONS_PER_ROUND = 8;
+
+function hasSupabaseConfig(){
+  if (!SUPABASE_URL || !SUPABASE_ANON_KEY) return false;
+  if (SUPABASE_URL.includes('your-project-ref') || SUPABASE_ANON_KEY.includes('your-anon-public-key')) return false;
+  return true;
+}
+
+const state = {
+  source: 'local',
+  allQuestions: [],
+  questions: [],
+  current: 0,
+  score: 0,
+  answered: false,
+  userAnswers: [],
+  shuffledOptions: null
+};
+
+const supabaseClient = hasSupabaseConfig() && window.supabase?.createClient
+  ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
+  : null;
 
 function shuffleArray(arr){
   const a = arr.slice();
@@ -156,16 +177,107 @@ function shuffleArray(arr){
   return a;
 }
 
+function normalizeQuestion(raw, index){
+  if (!raw || !raw.text) return null;
+
+  let options = raw.options;
+  if (typeof options === 'string') {
+    try {
+      options = JSON.parse(options);
+    } catch (error) {
+      options = [];
+    }
+  }
+
+  if (!Array.isArray(options) || options.length < 2) return null;
+
+  const correctIndex = Number(raw.correct_index ?? raw.correct);
+  if (!Number.isInteger(correctIndex) || correctIndex < 0 || correctIndex >= options.length) return null;
+
+  return {
+    id: raw.id ?? `question-${index}`,
+    topic: raw.topic?.trim() || 'Questão',
+    text: raw.text.trim(),
+    options: options.map((option) => String(option)),
+    correct: correctIndex,
+    explanation: raw.explanation?.trim() || '',
+    sort_order: Number(raw.sort_order ?? index)
+  };
+}
+
+function pickRoundQuestions(sourceQuestions, count){
+  const pool = shuffleArray(sourceQuestions);
+  const targetCount = Math.min(count, pool.length);
+  return pool.slice(0, targetCount);
+}
+
+function setLoadingState(message){
+  document.getElementById('quiz-area').innerHTML = `
+    <div class="score-screen">
+      <div class="score-big">...</div>
+      <div class="score-label">${message}</div>
+    </div>
+  `;
+}
+
+function setErrorState(message){
+  document.getElementById('quiz-area').innerHTML = `
+    <div class="score-screen">
+      <div class="score-big">Ops</div>
+      <div class="score-label">${message}</div>
+      <div class="score-actions" style="max-width:360px;margin:18px auto 0">
+        <button class="btn-next" type="button" onclick="initQuiz()">Tentar novamente</button>
+      </div>
+    </div>
+  `;
+}
+
+function startRound(){
+  state.current = 0;
+  state.score = 0;
+  state.answered = false;
+  state.userAnswers = [];
+  state.shuffledOptions = null;
+  state.questions = pickRoundQuestions(state.allQuestions, QUESTIONS_PER_ROUND);
+  renderQuestion();
+}
+
+async function loadQuestions(){
+  const fallbackQuestions = DEFAULT_QUESTIONS.map((question, index) => normalizeQuestion({ ...question, id: `fallback-${index}` }, index)).filter(Boolean);
+
+  if (!supabaseClient) {
+    return { source: 'local', questions: fallbackQuestions };
+  }
+
+  const { data, error } = await supabaseClient
+    .from(SUPABASE_TABLE)
+    .select('id, topic, text, options, correct_index, explanation, sort_order, active')
+    .eq('active', true)
+    .order('sort_order', { ascending: true })
+    .order('id', { ascending: true });
+
+  if (error) {
+    throw error;
+  }
+
+  const questions = (data || []).map((item, index) => normalizeQuestion(item, index)).filter(Boolean);
+
+  if (!questions.length) {
+    return { source: 'local', questions: fallbackQuestions };
+  }
+
+  return { source: 'supabase', questions };
+}
+
 function renderQuestion() {
-  const q = questions[current];
-  const total = questions.length;
-  const pct = Math.round(current / total * 100);
+  const q = state.questions[state.current];
+  const total = state.questions.length;
+  const pct = total ? Math.round(state.current / total * 100) : 0;
   const labels = ['A','B','C','D'];
-  // prepare shuffled options with original indices
   const opts = q.options.map((t,i)=>({text:t,orig:i}));
-  shuffledOptions = shuffleArray(opts);
-  const optsHtml = shuffledOptions.map((optObj,i)=>`
-    <button class="option-btn" id="opt-${i}" data-orig="${optObj.orig}" onclick="selectAnswer(${i})" role="button" tabindex="0">
+  state.shuffledOptions = shuffleArray(opts);
+  const optsHtml = state.shuffledOptions.map((optObj,i)=>`
+    <button class="option-btn" id="opt-${i}" type="button" data-orig="${optObj.orig}" onclick="selectAnswer(${i})">
       <span class="option-label">${labels[i] || (i+1)}</span>
       <div style="flex:1">${optObj.text}</div>
     </button>
@@ -174,7 +286,7 @@ function renderQuestion() {
   document.getElementById('quiz-area').innerHTML = `
     <div class="progress-row">
       <div class="tag">${q.topic}</div>
-      <div class="counter">Questão ${current+1} de ${total}</div>
+      <div class="counter">Questão ${state.current+1} de ${total} · ${state.source === 'supabase' ? 'Supabase' : 'local'}</div>
     </div>
     <div class="progress-bar-bg"><div class="progress-bar-fill" style="width:${pct}%"></div></div>
     <p class="question-text">${q.text}</p>
@@ -183,26 +295,23 @@ function renderQuestion() {
     <div class="nav-row">
       <span></span>
       <button class="btn-next" id="btn-next" style="display:none" onclick="nextQuestion()">
-        ${current < total-1 ? 'Próxima →' : 'Ver resultado →'}
+        ${state.current < total-1 ? 'Próxima →' : 'Ver resultado →'}
       </button>
     </div>
   `;
-  answered = false;
+  state.answered = false;
 }
 
 function selectAnswer(idx) {
-  if (answered) return;
-  answered = true;
-  const q = questions[current];
-  const labels = ['A','B','C','D','E','F'];
+  if (state.answered) return;
+  state.answered = true;
+  const q = state.questions[state.current];
   const chosenBtn = document.getElementById('opt-'+idx);
-  // original index of chosen option
   const chosenOrig = parseInt(chosenBtn.getAttribute('data-orig'),10);
   const isCorrect = chosenOrig === q.correct;
-  if (isCorrect) score++;
-  userAnswers.push({ correct: isCorrect, topic: q.topic, chosen: chosenOrig, chosenText: shuffledOptions[idx].text, correctText: q.options[q.correct] });
+  if (isCorrect) state.score++;
+  state.userAnswers.push({ correct: isCorrect, topic: q.topic, chosen: chosenOrig, chosenText: state.shuffledOptions[idx].text, correctText: q.options[q.correct] });
 
-  // disable and mark
   const btns = document.querySelectorAll('[id^="opt-"]');
   btns.forEach((btn,i)=>{
     btn.disabled = true;
@@ -219,8 +328,8 @@ function selectAnswer(idx) {
 }
 
 function nextQuestion() {
-  current++;
-  if (current < questions.length) {
+  state.current++;
+  if (state.current < state.questions.length) {
     renderQuestion();
   } else {
     renderScore();
@@ -228,10 +337,10 @@ function nextQuestion() {
 }
 
 function renderScore() {
-  const total = questions.length;
-  const pct = Math.round(score / total * 100);
+  const total = state.questions.length;
+  const pct = total ? Math.round(state.score / total * 100) : 0;
   const topicMap = {};
-  userAnswers.forEach(a => {
+  state.userAnswers.forEach(a => {
     if (!topicMap[a.topic]) topicMap[a.topic] = {correct:0,total:0};
     topicMap[a.topic].total++;
     if (a.correct) topicMap[a.topic].correct++;
@@ -245,12 +354,10 @@ function renderScore() {
   `).join('');
 
   let msg = pct >= 75 ? '🎯 Ótimo desempenho!' : pct >= 50 ? '📚 Bom começo, continue praticando!' : '💪 Revise os tópicos e tente novamente!';
-  // build review list
-  const reviewItems = questions.map((q,i)=>{
-    const ua = userAnswers[i];
+    const reviewItems = state.questions.map((q,i)=>{
+      const ua = state.userAnswers[i];
     const chosen = ua ? ua.chosenText : '—';
     const correct = q.options[q.correct];
-    const cls = ua ? (ua.correct? 'correct':'wrong') : '';
     return `<div style="margin-bottom:10px;padding:10px;border-radius:8px;background:rgba(255,255,255,0.01);border:1px solid rgba(255,255,255,0.02)">
       <div style="font-weight:600">${i+1}. ${q.text}</div>
       <div style="margin-top:6px;color:var(--muted)"><strong>Sua resposta:</strong> ${chosen} — <strong>Correta:</strong> ${correct}</div>
@@ -259,26 +366,24 @@ function renderScore() {
 
   document.getElementById('quiz-area').innerHTML = `
     <div class="score-screen">
-      <div class="score-big">${score}/${total}</div>
+      <div class="score-big">${state.score}/${total}</div>
       <div class="score-label">${pct}% de acerto — ${msg}</div>
       <div class="topic-results">${topicCards}</div>
       <div class="review-list" style="margin-top:12px">${reviewItems}</div>
       <div class="score-actions">
-        <button class="btn-restart" onclick="restart()">Reiniciar quiz</button>
-        <button class="btn-next" onclick="sendPrompt('Quero praticar mais questões de física para o ENEM, especialmente sobre MRUV e queda livre')">Quero mais questões ↗</button>
+        <button class="btn-restart" type="button" onclick="restart()">Nova rodada</button>
+        <button class="btn-next" type="button" onclick="restart()">Mais questões ↗</button>
       </div>
     </div>
   `;
 }
 
 function restart() {
-  current = 0; score = 0; userAnswers = [];
-  renderQuestion();
+  startRound();
 }
 
-// keyboard support: 1-4 and A-D
 document.addEventListener('keydown', (e)=>{
-  if (answered) return;
+  if (state.answered) return;
   const key = e.key.toLowerCase();
   const map = { '1':0,'2':1,'3':2,'4':3,'a':0,'b':1,'c':2,'d':3 };
   if (key in map){
@@ -288,5 +393,32 @@ document.addEventListener('keydown', (e)=>{
   }
 });
 
-renderQuestion();
+async function initQuiz(){
+  setLoadingState('Carregando questões...');
+
+  try {
+    const payload = await loadQuestions();
+    state.source = payload.source;
+    state.allQuestions = payload.questions;
+
+    if (!state.allQuestions.length) {
+      setErrorState('Não encontrei questões válidas para carregar. Verifique a tabela no Supabase.');
+      return;
+    }
+
+    startRound();
+  } catch (error) {
+    state.source = 'local';
+    state.allQuestions = DEFAULT_QUESTIONS.map((question, index) => normalizeQuestion({ ...question, id: `fallback-${index}` }, index)).filter(Boolean);
+
+    if (!state.allQuestions.length) {
+      setErrorState('Falha ao carregar as questões e o fallback local não está disponível.');
+      return;
+    }
+
+    startRound();
+  }
+}
+
+initQuiz();
 </script>
