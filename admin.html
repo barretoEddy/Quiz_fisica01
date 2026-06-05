@@ -4,16 +4,398 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>Admin — Quiz Física</title>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
   <style>
-    body{font-family:system-ui,Arial;padding:20px;background:#0f1724;color:#e6eef8}
-    .wrap{max-width:900px;margin:0 auto;background:#071226;padding:18px;border-radius:12px}
-    input,textarea,select{width:100%;padding:8px;margin:6px 0;border-radius:6px;border:1px solid rgba(255,255,255,0.06);background:transparent;color:inherit}
-    button{padding:8px 12px;border-radius:8px;border:none;background:#185FA5;color:#fff;cursor:pointer}
-    .row{display:flex;gap:12px}
-    .col{flex:1}
-    .list{margin-top:12px}
-    .item{padding:10px;border-radius:8px;background:rgba(255,255,255,0.02);margin-bottom:8px}
-    .muted{color:#9aa6b2;font-size:13px}
+    :root {
+      --bg-gradient: radial-gradient(circle at 50% 0%, #111b2d, #080f1a);
+      --card-bg: rgba(13, 24, 43, 0.65);
+      --card-border: rgba(255, 255, 255, 0.06);
+      --card-shadow: 0 20px 50px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+      --accent: #2563eb;
+      --accent-glow: rgba(37, 99, 235, 0.4);
+      --accent-hover: #3b82f6;
+      --accent-gradient: linear-gradient(135deg, #3b82f6, #06b6d4);
+      --success: #10b981;
+      --success-bg: rgba(16, 185, 129, 0.1);
+      --success-border: rgba(16, 185, 129, 0.3);
+      --danger: #ef4444;
+      --danger-bg: rgba(239, 68, 68, 0.1);
+      --danger-border: rgba(239, 68, 68, 0.3);
+      --text-primary: #f8fafc;
+      --text-secondary: #94a3b8;
+      --text-muted: #64748b;
+      --radius-lg: 16px;
+      --radius-md: 12px;
+      --radius-sm: 8px;
+      --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    html, body {
+      min-height: 100vh;
+      margin: 0;
+      font-family: 'DM Sans', system-ui, -apple-system, sans-serif;
+      background: var(--bg-gradient);
+      color: var(--text-primary);
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      padding: clamp(1rem, 4vw, 2.5rem);
+      box-sizing: border-box;
+      overflow-x: hidden;
+      position: relative;
+    }
+
+    /* Decorative blurred glow circles */
+    body::before, body::after {
+      content: '';
+      position: absolute;
+      width: 300px;
+      height: 300px;
+      border-radius: 50%;
+      filter: blur(120px);
+      z-index: -1;
+      opacity: 0.12;
+      pointer-events: none;
+    }
+    body::before {
+      top: 10%;
+      left: 10%;
+      background: #3b82f6;
+    }
+    body::after {
+      bottom: 10%;
+      right: 10%;
+      background: #06b6d4;
+    }
+
+    .wrap {
+      width: 100%;
+      max-width: 1100px;
+      margin: 0 auto;
+      background: var(--card-bg);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid var(--card-border);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--card-shadow);
+      padding: clamp(1.25rem, 4vw, 2.5rem);
+      box-sizing: border-box;
+      animation: fadeIn 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    h2 {
+      font-family: 'Outfit', sans-serif;
+      font-weight: 700;
+      font-size: clamp(1.8rem, 4vw, 2.2rem);
+      text-align: center;
+      background: linear-gradient(to right, #ffffff, #94a3b8);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin: 0 0 1.5rem 0;
+      letter-spacing: -0.02em;
+    }
+
+    h3 {
+      font-family: 'Outfit', sans-serif;
+      font-weight: 600;
+      font-size: 1.35rem;
+      margin: 0 0 1rem 0;
+      color: var(--text-primary);
+    }
+
+    #status {
+      text-align: center;
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+      padding: 0.6rem;
+      border-radius: var(--radius-sm);
+      background: rgba(255, 255, 255, 0.02);
+      margin-bottom: 1.5rem;
+      border: 1px solid rgba(255, 255, 255, 0.04);
+    }
+
+    #auth {
+      max-width: 420px;
+      margin: 2rem auto;
+      background: rgba(255, 255, 255, 0.01);
+      border: 1px solid rgba(255, 255, 255, 0.04);
+      padding: 2rem;
+      border-radius: var(--radius-lg);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    }
+
+    input, textarea, select {
+      width: 100%;
+      padding: 0.8rem 1rem;
+      margin: 0.5rem 0 1rem 0;
+      border-radius: var(--radius-md);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      background: rgba(255, 255, 255, 0.02);
+      color: var(--text-primary);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.95rem;
+      box-sizing: border-box;
+      transition: var(--transition);
+    }
+
+    input:focus, textarea:focus, select:focus {
+      outline: none;
+      border-color: var(--accent);
+      background: rgba(37, 99, 235, 0.04);
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.2);
+    }
+
+    input::placeholder, textarea::placeholder {
+      color: var(--text-muted);
+    }
+
+    button {
+      padding: 0.8rem 1.5rem;
+      border-radius: var(--radius-md);
+      border: none;
+      background: var(--accent-gradient);
+      color: #ffffff;
+      font-family: 'Outfit', sans-serif;
+      font-weight: 600;
+      font-size: 0.95rem;
+      cursor: pointer;
+      transition: var(--transition);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 12px var(--accent-glow);
+    }
+
+    button:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 18px rgba(37, 99, 235, 0.5);
+    }
+
+    button:active:not(:disabled) {
+      transform: translateY(0);
+    }
+
+    button:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    .row {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+      margin-bottom: 0.5rem;
+    }
+
+    .col {
+      flex: 1;
+      min-width: 140px;
+    }
+
+    label {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.95rem;
+      color: var(--text-secondary);
+      cursor: pointer;
+      user-select: none;
+      height: 100%;
+    }
+
+    label input[type="checkbox"] {
+      width: auto;
+      margin: 0;
+      cursor: pointer;
+    }
+
+    .dashboard-grid {
+      display: grid;
+      grid-template-columns: 1.1fr 1.9fr;
+      gap: 2rem;
+      align-items: start;
+    }
+
+    .dashboard-sidebar {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+
+    .user-card {
+      background: rgba(37, 99, 235, 0.04);
+      border: 1px solid rgba(37, 99, 235, 0.15);
+      border-radius: var(--radius-md);
+      padding: 1.25rem;
+    }
+
+    .user-card strong {
+      font-family: 'Outfit', sans-serif;
+      font-size: 1rem;
+      color: #93c5fd;
+    }
+
+    #btn-copy-user-id {
+      padding: 0.4rem 0.8rem;
+      font-size: 0.8rem;
+      min-height: auto;
+      background: rgba(255, 255, 255, 0.05);
+      color: var(--text-primary);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      box-shadow: none;
+    }
+
+    #btn-copy-user-id:hover {
+      background: rgba(255, 255, 255, 0.1);
+      transform: translateY(-1px);
+    }
+
+    .form-card {
+      background: rgba(255, 255, 255, 0.01);
+      border: 1px solid rgba(255, 255, 255, 0.04);
+      border-radius: var(--radius-lg);
+      padding: 1.5rem;
+    }
+
+    .dashboard-main {
+      background: rgba(255, 255, 255, 0.01);
+      border: 1px solid rgba(255, 255, 255, 0.04);
+      border-radius: var(--radius-lg);
+      padding: 1.5rem;
+    }
+
+    .list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+      margin-top: 1rem;
+      max-height: 70vh;
+      overflow-y: auto;
+      padding-right: 6px;
+    }
+
+    /* Custom scrollbar for questions list */
+    .list::-webkit-scrollbar {
+      width: 6px;
+    }
+    .list::-webkit-scrollbar-track {
+      background: rgba(255, 255, 255, 0.01);
+      border-radius: 999px;
+    }
+    .list::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 999px;
+    }
+    .list::-webkit-scrollbar-thumb:hover {
+      background: rgba(255, 255, 255, 0.2);
+    }
+
+    .item {
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid rgba(255, 255, 255, 0.04);
+      border-radius: var(--radius-md);
+      padding: 1.25rem;
+      transition: var(--transition);
+    }
+
+    .item:hover {
+      background: rgba(255, 255, 255, 0.04);
+      border-color: rgba(255, 255, 255, 0.08);
+      transform: translateY(-2px);
+    }
+
+    .item strong {
+      font-family: 'Outfit', sans-serif;
+      font-size: 1.1rem;
+      color: #93c5fd;
+    }
+
+    .item button {
+      padding: 0.5rem 1rem;
+      font-size: 0.85rem;
+      font-weight: 600;
+      font-family: 'Outfit', sans-serif;
+      border-radius: var(--radius-sm);
+      min-height: auto;
+      box-shadow: none;
+    }
+
+    .item button[data-action="edit"] {
+      background: rgba(37, 99, 235, 0.1);
+      color: #93c5fd;
+      border: 1px solid rgba(37, 99, 235, 0.3);
+    }
+
+    .item button[data-action="edit"]:hover {
+      background: var(--accent);
+      color: #ffffff;
+      border-color: transparent;
+      box-shadow: 0 4px 12px var(--accent-glow);
+    }
+
+    .item button[data-action="del"] {
+      background: rgba(239, 68, 68, 0.1) !important;
+      color: #fca5a5 !important;
+      border: 1px solid rgba(239, 68, 68, 0.3) !important;
+      margin-left: 6px;
+    }
+
+    .item button[data-action="del"]:hover {
+      background: var(--danger) !important;
+      color: #ffffff !important;
+      border-color: transparent !important;
+      box-shadow: 0 4px 12px rgba(239, 68, 68, 0.4);
+    }
+
+    .muted {
+      color: var(--text-secondary);
+      font-size: 0.85rem;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(15px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* RESPONSIVENESS MEDIA QUERIES */
+    @media (max-width: 900px) {
+      body {
+        padding: 0.75rem;
+      }
+      .wrap {
+        padding: 1.25rem 1rem;
+        border-radius: var(--radius-md);
+      }
+      .dashboard-grid {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+      }
+      .list {
+        max-height: none;
+      }
+    }
+
+    @media (max-width: 580px) {
+      .item > div {
+        flex-direction: column !important;
+        align-items: flex-start !important;
+        gap: 1rem;
+      }
+      .item div[style*="text-align:right"] {
+        text-align: left !important;
+        width: 100%;
+        display: flex;
+        gap: 0.5rem;
+        margin-top: 0.5rem;
+      }
+      .item button {
+        flex: 1;
+        text-align: center;
+      }
+      .item button[data-action="del"] {
+        margin-left: 0 !important;
+      }
+    }
   </style>
 </head>
 <body>
@@ -25,35 +407,44 @@
       <h3>Login</h3>
       <input id="email" placeholder="Seu e-mail de admin">
       <button id="btn-send">Enviar link mágico</button>
-      <div class="muted">Faça login com o mesmo e-mail configurado no Supabase.</div>
+      <div class="muted" style="margin-top: 10px;">Faça login com o mesmo e-mail configurado no Supabase.</div>
     </div>
 
     <div id="panel" style="display:none">
-      <div style="margin-bottom:14px;padding:12px;border:1px solid rgba(255,255,255,0.06);border-radius:10px;background:rgba(255,255,255,0.02)">
-        <div><strong>Usuário autenticado</strong></div>
-        <div class="muted" id="user-email"></div>
-        <div class="muted" style="word-break:break-all;margin-top:4px">ID: <span id="user-id"></span></div>
-        <div style="margin-top:8px">
-          <button id="btn-copy-user-id" type="button">Copiar user_id</button>
+      <div class="dashboard-grid">
+        <div class="dashboard-sidebar">
+          <div class="user-card">
+            <div><strong>Usuário autenticado</strong></div>
+            <div class="muted" id="user-email" style="margin-top:4px"></div>
+            <div class="muted" style="word-break:break-all;margin-top:4px">ID: <span id="user-id"></span></div>
+            <div style="margin-top:10px">
+              <button id="btn-copy-user-id" type="button">Copiar user_id</button>
+            </div>
+          </div>
+          
+          <div class="form-card">
+            <h3>Nova questão</h3>
+            <input id="topic" placeholder="Tópico (ex: MRUV)">
+            <textarea id="text" rows="3" placeholder="Enunciado"></textarea>
+            <textarea id="options" rows="3" placeholder="Uma alternativa por linha"></textarea>
+            <input id="correct_index" placeholder="Índice correto (0 = primeira)">
+            <input id="explanation" placeholder="Explicação (opcional)">
+            <div class="row">
+              <div class="col"><input id="sort_order" placeholder="Ordem (num)" type="number"></div>
+              <div class="col" style="display: flex; align-items: center;"><label><input id="active" type="checkbox" checked> Ativa</label></div>
+            </div>
+            <div style="margin-top:14px; display: flex; gap: 10px;">
+              <button id="btn-save" style="flex: 1;">Salvar questão</button>
+              <button id="btn-clear" style="background:transparent;border:1px solid rgba(255,255,255,0.06);">Limpar</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="dashboard-main">
+          <h3>Questões existentes</h3>
+          <div id="list" class="list"></div>
         </div>
       </div>
-      <h3>Nova questão</h3>
-      <input id="topic" placeholder="Tópico (ex: MRUV)">
-      <textarea id="text" rows="3" placeholder="Enunciado"></textarea>
-      <textarea id="options" rows="3" placeholder="Uma alternativa por linha"></textarea>
-      <input id="correct_index" placeholder="Índice correto (0 = primeira)">
-      <input id="explanation" placeholder="Explicação (opcional)">
-      <div class="row">
-        <div class="col"><input id="sort_order" placeholder="Ordem (num)" type="number"></div>
-        <div class="col"><label><input id="active" type="checkbox" checked> Ativa</label></div>
-      </div>
-      <div style="margin-top:8px">
-        <button id="btn-save">Salvar questão</button>
-        <button id="btn-clear" style="background:transparent;border:1px solid rgba(255,255,255,0.06);margin-left:8px">Limpar</button>
-      </div>
-
-      <h3 style="margin-top:18px">Questões existentes</h3>
-      <div id="list" class="list"></div>
     </div>
   </div>
 
@@ -246,7 +637,7 @@
       items.forEach(it => {
         const div = document.createElement('div'); div.className='item';
         div.innerHTML = `<div style="display:flex;justify-content:space-between;align-items:center">
-          <div><strong>${it.topic}</strong> <span class="muted">#${it.id}</span><div class="muted">${it.text}</div></div>
+          <div><strong>${it.topic}</strong> <span class="muted">#${it.id}</span><div class="muted" style="margin-top: 4px;">${it.text}</div></div>
           <div style="text-align:right">
             <button data-id="${it.id}" data-action="edit">Editar</button>
             <button data-id="${it.id}" data-action="del" style="background:#A32D2D;margin-left:6px">Excluir</button>
