@@ -12,7 +12,7 @@
     --muted: #9aa6b2;
     --radius:12px;
   }
-  html,body{height:100%;margin:0;font-family:'DM Sans',system-ui,Arial;background:radial-gradient(1200px 400px at 10% 10%, rgba(29,78,216,0.06), transparent), linear-gradient(180deg,#071126 0%, #071826 100%);color:#e6eef8}
+  html,body{height:100vh;margin:0;font-family:'DM Sans',system-ui,Arial;background:radial-gradient(1200px 400px at 10% 10%, rgba(29,78,216,0.06), transparent), linear-gradient(180deg,#071126 0%, #071826 100%);color:#e6eef8}
   body{display:flex;align-items:center;justify-content:center;padding:28px}
   .quiz-wrap{width:min(100%,820px);margin:0 auto;padding:28px;background:var(--card);backdrop-filter: blur(6px);border-radius:16px;box-shadow:0 8px 30px rgba(2,6,23,0.6);}
   h2{font-family:'Playfair Display',serif;text-align:center;color:var(--accent);margin:0 0 18px 0}
@@ -81,6 +81,8 @@
   <div id="quiz-area" aria-live="polite"></div>
 </div>
 
+<script src="supabase-config.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
 const ALL_QUESTIONS = [
   {
@@ -173,7 +175,7 @@ function renderQuestion() {
   const q = questions[current];
   const total = questions.length;
   const pct = Math.round(current / total * 100);
-  const labels = ['A','B','C','D'];
+  const labels = ['A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z'];
   // prepare shuffled options with original indices
   const opts = q.options.map((t,i)=>({text:t,orig:i}));
   shuffledOptions = shuffleArray(opts);
@@ -300,6 +302,59 @@ document.addEventListener('keydown', (e)=>{
     if (btn) btn.click();
   }
 });
+// Supabase client (optional)
+const SUPABASE_URL = window.SUPABASE_URL || '';
+const SUPABASE_ANON_KEY = window.SUPABASE_ANON_KEY || '';
+const SUPABASE_TABLE = 'questions';
+const hasSupabase = SUPABASE_URL && SUPABASE_ANON_KEY && !SUPABASE_URL.includes('your-project-ref');
+const supabaseClient = hasSupabase ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : null;
 
-renderQuestion();
+function normalizeRawQuestion(raw, index){
+  if (!raw || !raw.text) return null;
+  let options = raw.options;
+  if (typeof options === 'string'){
+    try { options = JSON.parse(options); } catch(e){ options = [] }
+  }
+  if (!Array.isArray(options) || options.length < 2) return null;
+  const correctIndex = Number(raw.correct_index ?? raw.correct ?? raw.correctIndex ?? 0);
+  if (!Number.isInteger(correctIndex) || correctIndex < 0 || correctIndex >= options.length) return null;
+  return {
+    id: raw.id ?? `q-${index}`,
+    topic: raw.topic || 'Questão',
+    text: String(raw.text),
+    options: options.map(String),
+    correct: correctIndex,
+    explanation: raw.explanation || '',
+    sort_order: Number(raw.sort_order ?? 0)
+  };
+}
+
+async function tryLoadFromSupabase(){
+  if (!supabaseClient) return false;
+  try {
+    const { data, error } = await supabaseClient
+      .from(SUPABASE_TABLE)
+      .select('id,topic,text,options,correct_index,explanation,sort_order,active')
+      .eq('active', true)
+      .order('sort_order', { ascending: true })
+      .order('id', { ascending: true });
+    if (error) { console.warn('Supabase error', error); return false }
+    const fetched = (data || []).map((r,i)=> normalizeRawQuestion(r,i)).filter(Boolean);
+    if (!fetched.length) return false;
+    questions = pickRoundQuestions(fetched, QUESTIONS_PER_ROUND);
+    renderQuestion();
+    return true;
+  } catch (err){ console.error(err); return false }
+}
+
+async function init(){
+  const ok = await tryLoadFromSupabase();
+  if (!ok){
+    // fallback to bundled questions
+    questions = pickRoundQuestions(ALL_QUESTIONS, QUESTIONS_PER_ROUND);
+    renderQuestion();
+  }
+}
+
+init();
 </script>
