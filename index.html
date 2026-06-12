@@ -1,10 +1,13 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Quiz de Física — Cinemática ENEM</title>
-  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=DM+Sans:wght@400;500;700&display=swap"
+    rel="stylesheet">
   <style>
     :root {
       --bg-gradient: radial-gradient(circle at 50% 0%, #111b2d, #080f1a);
@@ -30,7 +33,8 @@
       --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     }
 
-    html, body {
+    html,
+    body {
       min-height: 100vh;
       margin: 0;
       font-family: 'DM Sans', system-ui, -apple-system, sans-serif;
@@ -46,7 +50,8 @@
     }
 
     /* Decorative blurred glow circles */
-    body::before, body::after {
+    body::before,
+    body::after {
       content: '';
       position: absolute;
       width: 300px;
@@ -57,11 +62,13 @@
       opacity: 0.12;
       pointer-events: none;
     }
+
     body::before {
       top: 10%;
       left: 10%;
       background: #3b82f6;
     }
+
     body::after {
       bottom: 10%;
       right: 10%;
@@ -88,7 +95,7 @@
       font-size: clamp(1.8rem, 4vw, 2.2rem);
       text-align: center;
       background: linear-gradient(to right, #ffffff, #94a3b8);
-      -webkit-background-clip: text;
+      /* -webkit-background-clip: text; */
       -webkit-text-fill-color: transparent;
       margin: 0 0 1.5rem 0;
       letter-spacing: -0.02em;
@@ -320,7 +327,7 @@
       font-size: clamp(3rem, 10vw, 4.5rem);
       font-weight: 800;
       background: linear-gradient(135deg, #60a5fa, #a7f3d0);
-      -webkit-background-clip: text;
+      /* -webkit-background-clip: text; */
       -webkit-text-fill-color: transparent;
       margin-bottom: 0.5rem;
       line-height: 1;
@@ -385,14 +392,17 @@
     .review-list::-webkit-scrollbar {
       width: 6px;
     }
+
     .review-list::-webkit-scrollbar-track {
       background: rgba(255, 255, 255, 0.01);
       border-radius: 999px;
     }
+
     .review-list::-webkit-scrollbar-thumb {
       background: rgba(255, 255, 255, 0.1);
       border-radius: 999px;
     }
+
     .review-list::-webkit-scrollbar-thumb:hover {
       background: rgba(255, 255, 255, 0.2);
     }
@@ -478,13 +488,27 @@
     }
 
     @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(15px); }
-      to { opacity: 1; transform: translateY(0); }
+      from {
+        opacity: 0;
+        transform: translateY(15px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
     }
 
     @keyframes slideInUp {
-      from { opacity: 0; transform: translateY(10px); }
-      to { opacity: 1; transform: translateY(0); }
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
     }
 
     /* RESPONSIVENESS MEDIA QUERIES */
@@ -493,154 +517,527 @@
         padding: 0.75rem;
         align-items: flex-start;
       }
+
       .quiz-wrap {
         padding: 1.25rem 1rem;
         border-radius: var(--radius-md);
       }
+
       .progress-row {
         flex-direction: column;
         align-items: flex-start;
         gap: 0.5rem;
       }
+
       .options {
         gap: 0.6rem;
       }
+
       .option-btn {
         padding: 0.8rem 1rem;
         min-height: 52px;
         font-size: 0.9rem;
       }
+
       .option-label {
         width: 28px;
         height: 28px;
         flex: 0 0 28px;
         font-size: 0.85rem;
       }
+
       .score-actions {
         grid-template-columns: 1fr;
       }
+
       .topic-results {
         grid-template-columns: 1fr;
       }
     }
+
+    /* SPLASH SCREEN & CHIPS */
+    .splash-container {
+      text-align: center;
+      animation: fadeIn 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .splash-title-wrapper {
+      margin-bottom: 2rem;
+      width: 100%;
+    }
+
+    .splash-icon {
+      font-size: 3.5rem;
+      margin-bottom: 0.75rem;
+      display: inline-block;
+      filter: drop-shadow(0 0 12px var(--accent-glow));
+      animation: float 4s ease-in-out infinite;
+    }
+
+    @keyframes float {
+
+      0%,
+      100% {
+        transform: translateY(0);
+      }
+
+      50% {
+        transform: translateY(-10px);
+      }
+    }
+
+    .splash-title {
+      font-family: 'Outfit', sans-serif;
+      font-size: clamp(2rem, 5vw, 2.75rem);
+      font-weight: 800;
+      background: linear-gradient(135deg, #ffffff, #94a3b8);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin: 0 0 0.5rem 0;
+      letter-spacing: -0.02em;
+    }
+
+    .splash-subtitle {
+      font-size: clamp(0.95rem, 2.5vw, 1.1rem);
+      color: var(--text-secondary);
+      max-width: 540px;
+      margin: 0 auto;
+      line-height: 1.5;
+    }
+
+    .filter-section {
+      text-align: left;
+      margin-bottom: 1.75rem;
+      width: 100%;
+    }
+
+    .filter-title {
+      font-family: 'Outfit', sans-serif;
+      font-size: 0.85rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-secondary);
+      margin-bottom: 0.75rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+      padding-bottom: 0.35rem;
+    }
+
+    .filter-title span.info {
+      font-size: 0.75rem;
+      text-transform: none;
+      font-weight: 400;
+      color: var(--text-muted);
+      letter-spacing: 0;
+    }
+
+    .chip-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.6rem;
+      margin-top: 0.25rem;
+    }
+
+    .chip-btn {
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      color: var(--text-secondary);
+      padding: 0.5rem 1rem;
+      border-radius: var(--radius-sm);
+      font-size: 0.9rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: var(--transition);
+      user-select: none;
+      font-family: 'DM Sans', sans-serif;
+    }
+
+    .chip-btn:hover {
+      background: rgba(255, 255, 255, 0.05);
+      border-color: rgba(255, 255, 255, 0.15);
+      color: var(--text-primary);
+      transform: translateY(-1px);
+    }
+
+    .chip-btn.active {
+      background: var(--accent-gradient);
+      border-color: transparent;
+      color: #ffffff;
+      box-shadow: 0 0 12px rgba(37, 99, 235, 0.3);
+      font-weight: 600;
+    }
+
+    .btn-start-quiz {
+      background: var(--accent-gradient);
+      color: #ffffff;
+      border: none;
+      width: 100%;
+      max-width: 340px;
+      padding: 0.95rem 2rem;
+      font-family: 'Outfit', sans-serif;
+      font-weight: 700;
+      font-size: 1.1rem;
+      border-radius: var(--radius-md);
+      cursor: pointer;
+      margin-top: 1rem;
+      transition: var(--transition);
+      box-shadow: 0 4px 14px var(--accent-glow);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.6rem;
+      animation: pulseGlow 2s infinite;
+    }
+
+    .btn-start-quiz:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(37, 99, 235, 0.6);
+    }
+
+    .btn-start-quiz:active {
+      transform: translateY(0);
+    }
+
+    .empty-warning {
+      color: #fca5a5;
+      font-size: 0.85rem;
+      margin-top: 0.75rem;
+      display: none;
+      font-weight: 500;
+      text-align: center;
+      animation: fadeIn 0.3s ease;
+    }
+
+    @keyframes pulseGlow {
+      0% {
+        box-shadow: 0 0 0 0 rgba(37, 99, 235, 0.5);
+      }
+
+      70% {
+        box-shadow: 0 0 0 10px rgba(37, 99, 235, 0);
+      }
+
+      100% {
+        box-shadow: 0 0 0 0 rgba(37, 99, 235, 0);
+      }
+    }
   </style>
 </head>
+
 <body>
 
-<div class="quiz-wrap">
-  <h2 class="sr-only">Quiz de Física — Cinemática ENEM</h2>
-  <div id="quiz-area" aria-live="polite"></div>
-</div>
+  <div class="quiz-wrap">
+    <h2 class="sr-only">Quiz de Física — Cinemática ENEM</h2>
+    <div id="quiz-area" aria-live="polite"></div>
+  </div>
 
-<script src="supabase-config.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script>
-const ALL_QUESTIONS = [
-  {
-    topic: "Velocidade Média",
-    text: "Um carro percorre 120 km em 1,5 h e depois mais 60 km em 0,5 h. Qual é a velocidade média em todo o percurso?",
-    options: ["80 km/h", "90 km/h", "100 km/h", "110 km/h"],
-    correct: 1,
-    explanation: "Velocidade média = distância total / tempo total. Distância = 120 + 60 = 180 km. Tempo = 1,5 + 0,5 = 2 h. Vm = 180/2 = 90 km/h."
-  },
-  {
-    topic: "MRU",
-    text: "Dois trens partem em sentidos opostos a partir do mesmo ponto. Um vai a 60 km/h e o outro a 80 km/h. Em quanto tempo estarão separados por 420 km?",
-    options: ["2 h", "2,5 h", "3 h", "3,5 h"],
-    correct: 2,
-    explanation: "No MRU em sentidos opostos, as velocidades se somam: 60 + 80 = 140 km/h. Tempo = 420 / 140 = 3 h."
-  },
-  {
-    topic: "MRUV",
-    text: "Um carro parte do repouso e acelera uniformemente a 4 m/s². Qual é a velocidade após percorrer 50 m?",
-    options: ["10 m/s", "15 m/s", "20 m/s", "25 m/s"],
-    correct: 3,
-    explanation: "Use v² = v₀² + 2aΔs → v² = 0 + 2·4·50 = 400 → v = 20 m/s."
-  },
-  {
-    topic: "Queda Livre",
-    text: "Um objeto é largado do repouso de uma altura de 80 m. Adotando g = 10 m/s², qual é a velocidade ao atingir o solo?",
-    options: ["20 m/s", "30 m/s", "40 m/s", "50 m/s"],
-    correct: 2,
-    explanation: "v² = 2gh = 2·10·80 = 1600 → v = 40 m/s. Tempo de queda: t = v/g = 40/10 = 4 s."
-  },
-  {
-    topic: "Lançamento Vertical",
-    text: "Uma bola é lançada verticalmente para cima com v₀ = 30 m/s (g = 10 m/s²). Qual é a altura máxima atingida?",
-    options: ["30 m", "45 m", "60 m", "90 m"],
-    correct: 1,
-    explanation: "No ponto mais alto, v = 0. v² = v₀² – 2gH → 0 = 900 – 2·10·H → H = 900/20 = 45 m."
-  },
-  {
-    topic: "MRUV",
-    text: "(ENEM-estilo) Um veículo freia de 20 m/s até parar com desaceleração de 5 m/s². Qual é o espaço percorrido durante a frenagem?",
-    options: ["20 m", "30 m", "40 m", "50 m"],
-    correct: 2,
-    explanation: "v² = v₀² – 2a·Δs → 0 = 400 – 2·5·Δs → Δs = 400/10 = 40 m."
-  },
-  {
-    topic: "Velocidade Média",
-    text: "Um atleta percorre a primeira metade de uma pista a 4 m/s e a segunda metade a 6 m/s. Qual é a velocidade média?",
-    options: ["4,8 m/s", "5,0 m/s", "5,2 m/s", "5,5 m/s"],
-    correct: 0,
-    explanation: "Para distâncias iguais: Vm = 2·v₁·v₂ / (v₁+v₂) = 2·4·6 / 10 = 48/10 = 4,8 m/s. Atenção: não é simplesmente a média aritmética!"
-  },
-  {
-    topic: "Queda Livre",
-    text: "Dois objetos são soltos do repouso, um do dobro da altura do outro. A razão entre os tempos de queda (maior/menor) é:",
-    options: ["√2", "2", "√3", "4"],
-    correct: 0,
-    explanation: "h = ½gt² → t = √(2h/g). Se h₂ = 2h₁, então t₂/t₁ = √(2h₂/g) / √(2h₁/g) = √(h₂/h₁) = √2."
-  }
-];
+  <script src="supabase-config.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script>
+    const ALL_QUESTIONS = [
+      {
+        topic: "Velocidade Média",
+        text: "Um carro percorre 120 km em 1,5 h e depois mais 60 km em 0,5 h. Qual é a velocidade média em todo o percurso?",
+        options: ["80 km/h", "90 km/h", "100 km/h", "110 km/h"],
+        correct: 1,
+        explanation: "Velocidade média = distância total / tempo total. Distância = 120 + 60 = 180 km. Tempo = 1,5 + 0,5 = 2 h. Vm = 180/2 = 90 km/h.",
+        difficulty: 1
+      },
+      {
+        topic: "MRU",
+        text: "Dois trens partem em sentidos opostos a partir do mesmo ponto. Um vai a 60 km/h e o outro a 80 km/h. Em quanto tempo estarão separados por 420 km?",
+        options: ["2 h", "2,5 h", "3 h", "3,5 h"],
+        correct: 2,
+        explanation: "No MRU em sentidos opostos, as velocidades se somam: 60 + 80 = 140 km/h. Tempo = 420 / 140 = 3 h.",
+        difficulty: 2
+      },
+      {
+        topic: "MRUV",
+        text: "Um carro parte do repouso e acelera uniformemente a 4 m/s². Qual é a velocidade após percorrer 50 m?",
+        options: ["10 m/s", "15 m/s", "20 m/s", "25 m/s"],
+        correct: 3,
+        explanation: "Use v² = v₀² + 2aΔs → v² = 0 + 2·4·50 = 400 → v = 20 m/s.",
+        difficulty: 2
+      },
+      {
+        topic: "Queda Livre",
+        text: "Um objeto é largado do repouso de uma altura de 80 m. Adotando g = 10 m/s², qual é a velocidade ao atingir o solo?",
+        options: ["20 m/s", "30 m/s", "40 m/s", "50 m/s"],
+        correct: 2,
+        explanation: "v² = 2gh = 2·10·80 = 1600 → v = 40 m/s. Tempo de queda: t = v/g = 40/10 = 4 s.",
+        difficulty: 1
+      },
+      {
+        topic: "Lançamento Vertical",
+        text: "Uma bola é lançada verticalmente para cima com v₀ = 30 m/s (g = 10 m/s²). Qual é a altura máxima atingida?",
+        options: ["30 m", "45 m", "60 m", "90 m"],
+        correct: 1,
+        explanation: "No ponto mais alto, v = 0. v² = v₀² – 2gH → 0 = 900 – 2·10·H → H = 900/20 = 45 m.",
+        difficulty: 3
+      },
+      {
+        topic: "MRUV",
+        text: "(ENEM-estilo) Um veículo freia de 20 m/s até parar com desaceleração de 5 m/s². Qual é o espaço percorrido durante a frenagem?",
+        options: ["20 m", "30 m", "40 m", "50 m"],
+        correct: 2,
+        explanation: "v² = v₀² – 2a·Δs → 0 = 400 – 2·5·Δs → Δs = 400/10 = 40 m.",
+        difficulty: 2
+      },
+      {
+        topic: "Velocidade Média",
+        text: "Um atleta percorre a primeira metade de uma pista a 4 m/s e a segunda metade a 6 m/s. Qual é a velocidade média?",
+        options: ["4,8 m/s", "5,0 m/s", "5,2 m/s", "5,5 m/s"],
+        correct: 0,
+        explanation: "Para distâncias iguais: Vm = 2·v₁·v₂ / (v₁+v₂) = 2·4·6 / 10 = 48/10 = 4,8 m/s. Atenção: não é simplesmente a média aritmética!",
+        difficulty: 3
+      },
+      {
+        topic: "Queda Livre",
+        text: "Dois objetos são soltos do repouso, um do dobro da altura do outro. A razão entre os tempos de queda (maior/menor) é:",
+        options: ["√2", "2", "√3", "4"],
+        correct: 0,
+        explanation: "h = ½gt² → t = √(2h/g). Se h₂ = 2h₁, então t₂/t₁ = √(2h₂/g) / √(2h₁/g) = √(h₂/h₁) = √2.",
+        difficulty: 3
+      }
+    ];
 
-// 0 = usar todas as questões disponíveis
-const QUESTIONS_PER_ROUND = 0;
+    let loadedQuestionsPool = [];
+    let questions = [];
 
-function pickRoundQuestions(sourceQuestions, count){
-  const pool = shuffleArray(sourceQuestions);
-  if (!count || count <= 0) return pool;
-  const targetCount = Math.min(count, pool.length);
-  return pool.slice(0, targetCount);
-}
+    let current = 0;
+    let score = 0;
+    let answered = false;
+    let userAnswers = [];
+    const topicScores = {};
+    let shuffledOptions = null;
 
-// perguntas ativas para a rodada
-let questions = pickRoundQuestions(ALL_QUESTIONS, QUESTIONS_PER_ROUND);
+    // Filter state
+    const selectedTopics = new Set();
+    const selectedDifficulties = new Set();
+    let selectedQuantity = "todas";
 
-let current = 0;
-let score = 0;
-let answered = false;
-let userAnswers = [];
-const topicScores = {};
-let shuffledOptions = null;
+    function pickRoundQuestions(sourceQuestions, count) {
+      const pool = shuffleArray(sourceQuestions);
+      if (!count || count <= 0) return pool;
+      const targetCount = Math.min(count, pool.length);
+      return pool.slice(0, targetCount);
+    }
 
-function shuffleArray(arr){
-  const a = arr.slice();
-  for(let i=a.length-1;i>0;i--){
-    const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]
-  }
-  return a;
-}
+    function shuffleArray(arr) {
+      const a = arr.slice();
+      for (let i = a.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));[a[i], a[j]] = [a[j], a[i]]
+      }
+      return a;
+    }
 
-function renderQuestion() {
-  const q = questions[current];
-  const total = questions.length;
-  const pct = Math.round(current / total * 100);
-  const labels = ['A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z'];
-  // prepare shuffled options with original indices
-  const opts = q.options.map((t,i)=>({text:t,orig:i}));
-  shuffledOptions = shuffleArray(opts);
-  const optsHtml = shuffledOptions.map((optObj,i)=>`
+    function toggleTopic(topic, btn) {
+      if (selectedTopics.has(topic)) {
+        selectedTopics.delete(topic);
+        btn.classList.remove('active');
+        btn.setAttribute('aria-checked', 'false');
+      } else {
+        selectedTopics.add(topic);
+        btn.classList.add('active');
+        btn.setAttribute('aria-checked', 'true');
+      }
+    }
+
+    function toggleDifficulty(diffVal, btn) {
+      if (selectedDifficulties.has(diffVal)) {
+        selectedDifficulties.delete(diffVal);
+        btn.classList.remove('active');
+        btn.setAttribute('aria-checked', 'false');
+      } else {
+        selectedDifficulties.add(diffVal);
+        btn.classList.add('active');
+        btn.setAttribute('aria-checked', 'true');
+      }
+    }
+
+    function selectQuantity(qty, btn) {
+      selectedQuantity = qty;
+      const container = btn.parentElement;
+      container.querySelectorAll('.chip-btn').forEach(b => {
+        b.classList.remove('active');
+        b.setAttribute('aria-checked', 'false');
+      });
+      btn.classList.add('active');
+      btn.setAttribute('aria-checked', 'true');
+    }
+
+    function renderSplash(pool) {
+      const topics = [...new Set(pool.map(q => q.topic))].filter(Boolean);
+      const hasDifficulty = pool.some(q => q.difficulty !== undefined && q.difficulty !== null);
+
+      let html = `
+    <div class="splash-container">
+      <div class="splash-title-wrapper">
+        <div class="splash-icon">⚡</div>
+        <h1 class="splash-title">Quiz de Física</h1>
+        <p class="splash-subtitle">Treine para o ENEM selecionando os tópicos e a quantidade de questões de cinemática.</p>
+      </div>
+
+      <!-- Seção de Tópicos -->
+      <div class="filter-section">
+        <div class="filter-title">
+          Tópicos
+          <span class="info">Selecione para filtrar (Nenhum = Todos)</span>
+        </div>
+        <div class="chip-container">
+  `;
+
+      topics.forEach((topic) => {
+        const isActive = selectedTopics.has(topic);
+        html += `
+      <button class="chip-btn ${isActive ? 'active' : ''}" 
+              onclick="toggleTopic('${topic.replace(/'/g, "\\'")}', this)" 
+              role="checkbox" 
+              aria-checked="${isActive ? 'true' : 'false'}">
+        ${topic}
+      </button>
+    `;
+      });
+
+      html += `
+        </div>
+      </div>
+  `;
+
+      if (hasDifficulty) {
+        html += `
+      <div class="filter-section">
+        <div class="filter-title">
+          Dificuldade
+          <span class="info">Selecione para filtrar (Nenhuma = Todas)</span>
+        </div>
+        <div class="chip-container">
+    `;
+        const diffs = [
+          { value: 1, label: "Fácil" },
+          { value: 2, label: "Médio" },
+          { value: 3, label: "Difícil" }
+        ];
+        diffs.forEach(diff => {
+          const isActive = selectedDifficulties.has(diff.value);
+          html += `
+        <button class="chip-btn ${isActive ? 'active' : ''}" 
+                onclick="toggleDifficulty(${diff.value}, this)" 
+                role="checkbox" 
+                aria-checked="${isActive ? 'true' : 'false'}">
+          ${diff.label}
+        </button>
+      `;
+        });
+        html += `
+        </div>
+      </div>
+    `;
+      }
+
+      html += `
+      <div class="filter-section">
+        <div class="filter-title">
+          Quantidade de Questões
+        </div>
+        <div class="chip-container">
+  `;
+
+      const quantityOptions = [
+        { value: "5", label: "5 questões" },
+        { value: "10", label: "10 questões" },
+        { value: "todas", label: "Todas" }
+      ];
+
+      quantityOptions.forEach(opt => {
+        const isActive = selectedQuantity === opt.value;
+        html += `
+      <button class="chip-btn ${isActive ? 'active' : ''}" 
+              onclick="selectQuantity('${opt.value}', this)" 
+              role="radio" 
+              aria-checked="${isActive ? 'true' : 'false'}">
+        ${opt.label}
+      </button>
+    `;
+      });
+
+      html += `
+        </div>
+      </div>
+
+      <div class="empty-warning" id="empty-warning">
+        Nenhuma questão encontrada com esses filtros. Tente selecionar mais opções.
+      </div>
+
+      <button class="btn-start-quiz" onclick="startFilteredQuiz()">
+        <span>Começar Quiz</span>
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="9 18 15 12 9 6"></polyline>
+        </svg>
+      </button>
+    </div>
+  `;
+
+      document.getElementById('quiz-area').innerHTML = html;
+    }
+
+    function startFilteredQuiz() {
+      let filtered = loadedQuestionsPool;
+
+      if (selectedTopics.size > 0) {
+        filtered = filtered.filter(q => selectedTopics.has(q.topic));
+      }
+
+      const poolHasDifficulty = loadedQuestionsPool.some(q => q.difficulty !== undefined && q.difficulty !== null);
+      if (poolHasDifficulty && selectedDifficulties.size > 0) {
+        filtered = filtered.filter(q => selectedDifficulties.has(q.difficulty));
+      }
+
+      if (filtered.length === 0) {
+        const warning = document.getElementById('empty-warning');
+        if (warning) warning.style.display = 'block';
+        return;
+      } else {
+        const warning = document.getElementById('empty-warning');
+        if (warning) warning.style.display = 'none';
+      }
+
+      let count = parseInt(selectedQuantity, 10);
+      if (isNaN(count)) count = 0;
+
+      questions = pickRoundQuestions(filtered, count);
+      current = 0;
+      score = 0;
+      userAnswers = [];
+
+      renderQuestion();
+    }
+
+    function renderQuestion() {
+      const q = questions[current];
+      const total = questions.length;
+      const pct = Math.round(current / total * 100);
+      const labels = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'];
+      // prepare shuffled options with original indices
+      const opts = q.options.map((t, i) => ({ text: t, orig: i }));
+      shuffledOptions = shuffleArray(opts);
+      const optsHtml = shuffledOptions.map((optObj, i) => `
     <button class="option-btn" id="opt-${i}" data-orig="${optObj.orig}" onclick="selectAnswer(${i})" role="button" tabindex="0">
-      <span class="option-label">${labels[i] || (i+1)}</span>
+      <span class="option-label">${labels[i] || (i + 1)}</span>
       <div style="flex:1">${optObj.text}</div>
     </button>
   `).join('');
 
-  document.getElementById('quiz-area').innerHTML = `
+      document.getElementById('quiz-area').innerHTML = `
     <div class="progress-row">
       <div class="tag">${q.topic}</div>
-      <div class="counter">Questão ${current+1} de ${total}</div>
+      <div class="counter">Questão ${current + 1} de ${total}</div>
     </div>
     <div class="progress-bar-bg"><div class="progress-bar-fill" style="width:${pct}%"></div></div>
     <p class="question-text">${q.text}</p>
@@ -649,163 +1046,176 @@ function renderQuestion() {
     <div class="nav-row">
       <span></span>
       <button class="btn-next" id="btn-next" style="display:none" onclick="nextQuestion()">
-        ${current < total-1 ? 'Próxima →' : 'Ver resultado →'}
+        ${current < total - 1 ? 'Próxima →' : 'Ver resultado →'}
       </button>
     </div>
   `;
-  answered = false;
-}
+      answered = false;
+    }
 
-function selectAnswer(idx) {
-  if (answered) return;
-  answered = true;
-  const q = questions[current];
-  const chosenBtn = document.getElementById('opt-'+idx);
-  // original index of chosen option
-  const chosenOrig = parseInt(chosenBtn.getAttribute('data-orig'),10);
-  const isCorrect = chosenOrig === q.correct;
-  if (isCorrect) score++;
-  userAnswers.push({ correct: isCorrect, topic: q.topic, chosen: chosenOrig, chosenText: shuffledOptions[idx].text, correctText: q.options[q.correct] });
+    function selectAnswer(idx) {
+      if (answered) return;
+      answered = true;
+      const q = questions[current];
+      const chosenBtn = document.getElementById('opt-' + idx);
+      // original index of chosen option
+      const chosenOrig = parseInt(chosenBtn.getAttribute('data-orig'), 10);
+      const isCorrect = chosenOrig === q.correct;
+      if (isCorrect) score++;
+      userAnswers.push({ correct: isCorrect, topic: q.topic, chosen: chosenOrig, chosenText: shuffledOptions[idx].text, correctText: q.options[q.correct] });
 
-  // disable and mark
-  const btns = document.querySelectorAll('[id^="opt-"]');
-  btns.forEach((btn,i)=>{
-    btn.disabled = true;
-    const orig = parseInt(btn.getAttribute('data-orig'),10);
-    if (orig === q.correct) btn.classList.add('correct');
-    if (i === idx && orig !== q.correct) btn.classList.add('wrong');
-  });
+      // disable and mark
+      const btns = document.querySelectorAll('[id^="opt-"]');
+      btns.forEach((btn, i) => {
+        btn.disabled = true;
+        const orig = parseInt(btn.getAttribute('data-orig'), 10);
+        if (orig === q.correct) btn.classList.add('correct');
+        if (i === idx && orig !== q.correct) btn.classList.add('wrong');
+      });
 
-  const fb = document.getElementById('feedback');
-  fb.innerHTML = `<div class="feedback-box ${isCorrect ? 'correct' : 'wrong'}">
+      const fb = document.getElementById('feedback');
+      fb.innerHTML = `<div class="feedback-box ${isCorrect ? 'correct' : 'wrong'}">
     ${isCorrect ? '✓ Correto! ' : '✗ Incorreto. '} ${q.explanation}
   </div>`;
-  document.getElementById('btn-next').style.display = 'inline-block';
-}
+      document.getElementById('btn-next').style.display = 'inline-block';
+    }
 
-function nextQuestion() {
-  current++;
-  if (current < questions.length) {
-    renderQuestion();
-  } else {
-    renderScore();
-  }
-}
+    function nextQuestion() {
+      current++;
+      if (current < questions.length) {
+        renderQuestion();
+      } else {
+        renderScore();
+      }
+    }
 
-function renderScore() {
-  const total = questions.length;
-  const pct = Math.round(score / total * 100);
-  const topicMap = {};
-  userAnswers.forEach(a => {
-    if (!topicMap[a.topic]) topicMap[a.topic] = {correct:0,total:0};
-    topicMap[a.topic].total++;
-    if (a.correct) topicMap[a.topic].correct++;
-  });
+    function renderScore() {
+      const total = questions.length;
+      const pct = Math.round(score / total * 100);
+      const topicMap = {};
+      userAnswers.forEach(a => {
+        if (!topicMap[a.topic]) topicMap[a.topic] = { correct: 0, total: 0 };
+        topicMap[a.topic].total++;
+        if (a.correct) topicMap[a.topic].correct++;
+      });
 
-  const topicCards = Object.entries(topicMap).map(([name, v]) => `
+      const topicCards = Object.entries(topicMap).map(([name, v]) => `
     <div class="topic-card">
       <div class="topic-card-name">${name}</div>
       <div class="topic-card-score">${v.correct}/${v.total}</div>
     </div>
   `).join('');
 
-  let msg = pct >= 75 ? '🎯 Ótimo desempenho!' : pct >= 50 ? '📚 Bom começo, continue praticando!' : '💪 Revise os tópicos e tente novamente!';
-  // build review list
-  const reviewItems = questions.map((q,i)=>{
-    const ua = userAnswers[i];
-    const chosen = ua ? ua.chosenText : '—';
-    const correct = q.options[q.correct];
-    return `<div class="review-item">
-      <div class="review-question">${i+1}. ${q.text}</div>
+      let msg = pct >= 75 ? '🎯 Ótimo desempenho!' : pct >= 50 ? '📚 Bom começo, continue praticando!' : '💪 Revise os tópicos e tente novamente!';
+      // build review list
+      const reviewItems = questions.map((q, i) => {
+        const ua = userAnswers[i];
+        const chosen = ua ? ua.chosenText : '—';
+        const correct = q.options[q.correct];
+        return `<div class="review-item">
+      <div class="review-question">${i + 1}. ${q.text}</div>
       <div class="review-meta"><strong>Sua resposta:</strong> ${chosen} — <strong>Correta:</strong> ${correct}</div>
     </div>`;
-  }).join('');
+      }).join('');
 
-  document.getElementById('quiz-area').innerHTML = `
+      document.getElementById('quiz-area').innerHTML = `
     <div class="score-screen">
       <div class="score-big">${score}/${total}</div>
       <div class="score-label">${pct}% de acerto — ${msg}</div>
       <div class="topic-results">${topicCards}</div>
       <div class="review-list" style="margin-top:12px">${reviewItems}</div>
-      <div class="score-actions">
+      <div class="score-actions" style="grid-template-columns: 1fr; max-width: 340px; margin: 1.5rem auto 0 auto;">
         <button class="btn-restart" onclick="restart()">Reiniciar quiz</button>
-        <button class="btn-next" onclick="sendPrompt('Quero praticar mais questões de física para o ENEM, especialmente sobre MRUV e queda livre')">Quero mais questões ↗</button>
       </div>
     </div>
   `;
-}
+    }
 
-function restart() {
-  current = 0; score = 0; userAnswers = [];
-  renderQuestion();
-}
+    function restart() {
+      current = 0; score = 0; userAnswers = [];
+      renderSplash(loadedQuestionsPool);
+    }
 
-// keyboard support: 1-4 and A-D
-document.addEventListener('keydown', (e)=>{
-  if (answered) return;
-  const key = e.key.toLowerCase();
-  const map = { '1':0,'2':1,'3':2,'4':3,'a':0,'b':1,'c':2,'d':3 };
-  if (key in map){
-    const idx = map[key];
-    const btn = document.getElementById('opt-'+idx);
-    if (btn) btn.click();
-  }
-});
-// Supabase client (optional)
-const SUPABASE_URL = window.SUPABASE_URL || '';
-const SUPABASE_ANON_KEY = window.SUPABASE_ANON_KEY || '';
-const SUPABASE_TABLE = 'questions';
-const hasSupabase = SUPABASE_URL && SUPABASE_ANON_KEY && !SUPABASE_URL.includes('your-project-ref');
-const supabaseClient = hasSupabase ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : null;
+    // keyboard support: 1-4 and A-D
+    document.addEventListener('keydown', (e) => {
+      if (answered) return;
+      const activeQuiz = document.getElementById('opt-0');
+      if (!activeQuiz) return;
+      const key = e.key.toLowerCase();
+      const map = { '1': 0, '2': 1, '3': 2, '4': 3, 'a': 0, 'b': 1, 'c': 2, 'd': 3 };
+      if (key in map) {
+        const idx = map[key];
+        const btn = document.getElementById('opt-' + idx);
+        if (btn) btn.click();
+      }
+    });
+    // Supabase client (optional)
+    const SUPABASE_URL = window.SUPABASE_URL || '';
+    const SUPABASE_ANON_KEY = window.SUPABASE_ANON_KEY || '';
+    const SUPABASE_TABLE = 'questions';
+    const hasSupabase = SUPABASE_URL && SUPABASE_ANON_KEY && !SUPABASE_URL.includes('your-project-ref');
+    const supabaseClient = hasSupabase ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : null;
 
-function normalizeRawQuestion(raw, index){
-  if (!raw || !raw.text) return null;
-  let options = raw.options;
-  if (typeof options === 'string'){
-    try { options = JSON.parse(options); } catch(e){ options = [] }
-  }
-  if (!Array.isArray(options) || options.length < 2) return null;
-  const correctIndex = Number(raw.correct_index ?? raw.correct ?? raw.correctIndex ?? 0);
-  if (!Number.isInteger(correctIndex) || correctIndex < 0 || correctIndex >= options.length) return null;
-  return {
-    id: raw.id ?? `q-${index}`,
-    topic: raw.topic || 'Questão',
-    text: String(raw.text),
-    options: options.map(String),
-    correct: correctIndex,
-    explanation: raw.explanation || '',
-    sort_order: Number(raw.sort_order ?? 0)
-  };
-}
+    function normalizeRawQuestion(raw, index) {
+      if (!raw || !raw.text) return null;
+      let options = raw.options;
+      if (typeof options === 'string') {
+        try { options = JSON.parse(options); } catch (e) { options = [] }
+      }
+      if (!Array.isArray(options) || options.length < 2) return null;
+      const correctIndex = Number(raw.correct_index ?? raw.correct ?? raw.correctIndex ?? 0);
+      if (!Number.isInteger(correctIndex) || correctIndex < 0 || correctIndex >= options.length) return null;
+      return {
+        id: raw.id ?? `q-${index}`,
+        topic: raw.topic || 'Questão',
+        text: String(raw.text),
+        options: options.map(String),
+        correct: correctIndex,
+        explanation: raw.explanation || '',
+        sort_order: Number(raw.sort_order ?? 0),
+        difficulty: raw.difficulty !== undefined ? Number(raw.difficulty) : undefined
+      };
+    }
 
-async function tryLoadFromSupabase(){
-  if (!supabaseClient) return false;
-  try {
-    const { data, error } = await supabaseClient
-      .from(SUPABASE_TABLE)
-      .select('id,topic,text,options,correct_index,explanation,sort_order,active')
-      .eq('active', true)
-      .order('sort_order', { ascending: true })
-      .order('id', { ascending: true });
-    if (error) { console.warn('Supabase error', error); return false }
-    const fetched = (data || []).map((r,i)=> normalizeRawQuestion(r,i)).filter(Boolean);
-    if (!fetched.length) return false;
-    questions = pickRoundQuestions(fetched, QUESTIONS_PER_ROUND);
-    renderQuestion();
-    return true;
-  } catch (err){ console.error(err); return false }
-}
+    async function tryLoadFromSupabase() {
+      if (!supabaseClient) return false;
+      try {
+        let { data, error } = await supabaseClient
+          .from(SUPABASE_TABLE)
+          .select('id,topic,text,options,correct_index,explanation,sort_order,active,difficulty')
+          .eq('active', true)
+          .order('sort_order', { ascending: true })
+          .order('id', { ascending: true });
 
-async function init(){
-  const ok = await tryLoadFromSupabase();
-  if (!ok){
-    // fallback to bundled questions
-    questions = pickRoundQuestions(ALL_QUESTIONS, QUESTIONS_PER_ROUND);
-    renderQuestion();
-  }
-}
+        if (error && error.code === '42703') {
+          const retryResult = await supabaseClient
+            .from(SUPABASE_TABLE)
+            .select('id,topic,text,options,correct_index,explanation,sort_order,active')
+            .eq('active', true)
+            .order('sort_order', { ascending: true })
+            .order('id', { ascending: true });
+          data = retryResult.data;
+          error = retryResult.error;
+        }
+        if (error) { console.warn('Supabase error', error); return false }
+        const fetched = (data || []).map((r, i) => normalizeRawQuestion(r, i)).filter(Boolean);
+        if (!fetched.length) return false;
+        loadedQuestionsPool = fetched;
+        renderSplash(loadedQuestionsPool);
+        return true;
+      } catch (err) { console.error(err); return false }
+    }
 
-init();
-</script>
+    async function init() {
+      const ok = await tryLoadFromSupabase();
+      if (!ok) {
+        loadedQuestionsPool = ALL_QUESTIONS;
+        renderSplash(loadedQuestionsPool);
+      }
+    }
+
+    init();
+  </script>
 </body>
+
 </html>

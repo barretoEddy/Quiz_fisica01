@@ -1,10 +1,13 @@
 <!doctype html>
 <html>
+
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>Admin — Quiz Física</title>
-  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=DM+Sans:wght@400;500;700&display=swap"
+    rel="stylesheet">
   <style>
     :root {
       --bg-gradient: radial-gradient(circle at 50% 0%, #111b2d, #080f1a);
@@ -30,7 +33,8 @@
       --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     }
 
-    html, body {
+    html,
+    body {
       min-height: 100vh;
       margin: 0;
       font-family: 'DM Sans', system-ui, -apple-system, sans-serif;
@@ -46,7 +50,8 @@
     }
 
     /* Decorative blurred glow circles */
-    body::before, body::after {
+    body::before,
+    body::after {
       content: '';
       position: absolute;
       width: 300px;
@@ -57,11 +62,13 @@
       opacity: 0.12;
       pointer-events: none;
     }
+
     body::before {
       top: 10%;
       left: 10%;
       background: #3b82f6;
     }
+
     body::after {
       bottom: 10%;
       right: 10%;
@@ -124,7 +131,9 @@
       box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
     }
 
-    input, textarea, select {
+    input,
+    textarea,
+    select {
       width: 100%;
       padding: 0.8rem 1rem;
       margin: 0.5rem 0 1rem 0;
@@ -138,14 +147,17 @@
       transition: var(--transition);
     }
 
-    input:focus, textarea:focus, select:focus {
+    input:focus,
+    textarea:focus,
+    select:focus {
       outline: none;
       border-color: var(--accent);
       background: rgba(37, 99, 235, 0.04);
       box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.2);
     }
 
-    input::placeholder, textarea::placeholder {
+    input::placeholder,
+    textarea::placeholder {
       color: var(--text-muted);
     }
 
@@ -278,14 +290,17 @@
     .list::-webkit-scrollbar {
       width: 6px;
     }
+
     .list::-webkit-scrollbar-track {
       background: rgba(255, 255, 255, 0.01);
       border-radius: 999px;
     }
+
     .list::-webkit-scrollbar-thumb {
       background: rgba(255, 255, 255, 0.1);
       border-radius: 999px;
     }
+
     .list::-webkit-scrollbar-thumb:hover {
       background: rgba(255, 255, 255, 0.2);
     }
@@ -353,8 +368,15 @@
     }
 
     @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(15px); }
-      to { opacity: 1; transform: translateY(0); }
+      from {
+        opacity: 0;
+        transform: translateY(15px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
     }
 
     /* RESPONSIVENESS MEDIA QUERIES */
@@ -362,25 +384,29 @@
       body {
         padding: 0.75rem;
       }
+
       .wrap {
         padding: 1.25rem 1rem;
         border-radius: var(--radius-md);
       }
+
       .dashboard-grid {
         grid-template-columns: 1fr;
         gap: 1.5rem;
       }
+
       .list {
         max-height: none;
       }
     }
 
     @media (max-width: 580px) {
-      .item > div {
+      .item>div {
         flex-direction: column !important;
         align-items: flex-start !important;
         gap: 1rem;
       }
+
       .item div[style*="text-align:right"] {
         text-align: left !important;
         width: 100%;
@@ -388,16 +414,19 @@
         gap: 0.5rem;
         margin-top: 0.5rem;
       }
+
       .item button {
         flex: 1;
         text-align: center;
       }
+
       .item button[data-action="del"] {
         margin-left: 0 !important;
       }
     }
   </style>
 </head>
+
 <body>
   <div class="wrap">
     <h2>Admin — Quiz de Física</h2>
@@ -421,7 +450,7 @@
               <button id="btn-copy-user-id" type="button">Copiar user_id</button>
             </div>
           </div>
-          
+
           <div class="form-card">
             <h3>Nova questão</h3>
             <input id="topic" placeholder="Tópico (ex: MRUV)">
@@ -431,11 +460,13 @@
             <input id="explanation" placeholder="Explicação (opcional)">
             <div class="row">
               <div class="col"><input id="sort_order" placeholder="Ordem (num)" type="number"></div>
-              <div class="col" style="display: flex; align-items: center;"><label><input id="active" type="checkbox" checked> Ativa</label></div>
+              <div class="col" style="display: flex; align-items: center;"><label><input id="active" type="checkbox"
+                    checked> Ativa</label></div>
             </div>
             <div style="margin-top:14px; display: flex; gap: 10px;">
               <button id="btn-save" style="flex: 1;">Salvar questão</button>
-              <button id="btn-clear" style="background:transparent;border:1px solid rgba(255,255,255,0.06);">Limpar</button>
+              <button id="btn-clear"
+                style="background:transparent;border:1px solid rgba(255,255,255,0.06);">Limpar</button>
             </div>
           </div>
         </div>
@@ -463,7 +494,7 @@
     let magicLinkCooldownTimer = null;
     const MAGIC_LINK_COOLDOWN_KEY = 'quizFisica.magicLinkCooldownUntil';
 
-    function saveCooldownUntil(value){
+    function saveCooldownUntil(value) {
       magicLinkCooldownUntil = value;
       try {
         localStorage.setItem(MAGIC_LINK_COOLDOWN_KEY, String(value));
@@ -472,7 +503,7 @@
       }
     }
 
-    function readCooldownUntil(){
+    function readCooldownUntil() {
       try {
         const storedValue = Number(localStorage.getItem(MAGIC_LINK_COOLDOWN_KEY) || 0);
         return Number.isFinite(storedValue) ? storedValue : 0;
@@ -481,14 +512,14 @@
       }
     }
 
-    function stopCooldownTimer(){
+    function stopCooldownTimer() {
       if (magicLinkCooldownTimer) {
         clearInterval(magicLinkCooldownTimer);
         magicLinkCooldownTimer = null;
       }
     }
 
-    function updateMagicLinkButtonState(){
+    function updateMagicLinkButtonState() {
       const now = Date.now();
       const remainingMs = magicLinkCooldownUntil - now;
       if (remainingMs > 0) {
@@ -505,18 +536,18 @@
       stopCooldownTimer();
     }
 
-    function startCooldown(seconds){
+    function startCooldown(seconds) {
       saveCooldownUntil(Date.now() + (seconds * 1000));
       updateMagicLinkButtonState();
       stopCooldownTimer();
       magicLinkCooldownTimer = setInterval(updateMagicLinkButtonState, 1000);
     }
 
-    function hasSupabaseConfig(){
+    function hasSupabaseConfig() {
       return window.SUPABASE_URL && window.SUPABASE_ANON_KEY && !window.SUPABASE_URL.includes('your-project-ref');
     }
 
-    if (!hasSupabaseConfig()){
+    if (!hasSupabaseConfig()) {
       statusEl.textContent = 'Preencha supabase-config.js com URL e anon key antes de usar o admin.';
       authEl.style.display = 'none';
       throw new Error('Supabase not configured');
@@ -527,7 +558,7 @@
 
     const supabaseClient = window.supabase.createClient(window.SUPABASE_URL, window.SUPABASE_ANON_KEY);
 
-    function setSignedOutState(){
+    function setSignedOutState() {
       authEl.style.display = 'block';
       panelEl.style.display = 'none';
       statusEl.textContent = 'Não autenticado';
@@ -535,7 +566,7 @@
       userIdEl.textContent = '';
     }
 
-    function setSignedInState(session){
+    function setSignedInState(session) {
       authEl.style.display = 'none';
       panelEl.style.display = 'block';
       statusEl.textContent = `Conectado: ${session.user.email}`;
@@ -543,12 +574,12 @@
       userIdEl.textContent = session.user.id || '';
     }
 
-    function getEmailRedirectTo(){
+    function getEmailRedirectTo() {
       if (window.location.protocol !== 'http:' && window.location.protocol !== 'https:') return '';
       return window.location.href.split('#')[0].split('?')[0];
     }
 
-    async function sendMagicLink(){
+    async function sendMagicLink() {
       const email = document.getElementById('email').value.trim();
       if (!email) return alert('Informe um e-mail');
       const now = Date.now();
@@ -558,7 +589,7 @@
         return;
       }
       const redirectTo = getEmailRedirectTo();
-      if (!redirectTo){
+      if (!redirectTo) {
         statusEl.textContent = 'Para o magic link voltar ao admin, abra esta página via HTTP(S) ou GitHub Pages. Em file:// o Supabase não consegue redirecionar de volta.';
         return;
       }
@@ -586,7 +617,7 @@
 
     btnSend.addEventListener('click', sendMagicLink);
 
-    async function syncAuthState(){
+    async function syncAuthState() {
       try {
         const { data: { session } } = await supabaseClient.auth.getSession();
         if (session && session.user) {
@@ -624,18 +655,18 @@
       }
     });
 
-    async function loadQuestions(){
+    async function loadQuestions() {
       statusEl.textContent = 'Carregando questões...';
       const { data, error } = await supabaseClient.from('questions').select('*').order('sort_order', { ascending: true }).order('id', { ascending: true });
-      if (error) { statusEl.textContent = 'Erro carregando: '+error.message; return }
+      if (error) { statusEl.textContent = 'Erro carregando: ' + error.message; return }
       renderList(data || []);
       statusEl.textContent = 'Pronto';
     }
 
-    function renderList(items){
+    function renderList(items) {
       listEl.innerHTML = '';
       items.forEach(it => {
-        const div = document.createElement('div'); div.className='item';
+        const div = document.createElement('div'); div.className = 'item';
         div.innerHTML = `<div style="display:flex;justify-content:space-between;align-items:center">
           <div><strong>${it.topic}</strong> <span class="muted">#${it.id}</span><div class="muted" style="margin-top: 4px;">${it.text}</div></div>
           <div style="text-align:right">
@@ -645,25 +676,25 @@
         </div>`;
         listEl.appendChild(div);
       });
-      listEl.querySelectorAll('button').forEach(btn=>btn.addEventListener('click', onListAction));
+      listEl.querySelectorAll('button').forEach(btn => btn.addEventListener('click', onListAction));
     }
 
-    async function onListAction(e){
+    async function onListAction(e) {
       const id = e.currentTarget.getAttribute('data-id');
       const action = e.currentTarget.getAttribute('data-action');
-      if (action === 'del'){
+      if (action === 'del') {
         if (!confirm('Excluir essa questão?')) return;
         const { error } = await supabaseClient.from('questions').delete().eq('id', id);
-        if (error) return alert('Erro: '+error.message);
+        if (error) return alert('Erro: ' + error.message);
         loadQuestions();
-      } else if (action === 'edit'){
+      } else if (action === 'edit') {
         const { data, error } = await supabaseClient.from('questions').select('*').eq('id', id).single();
-        if (error) return alert('Erro: '+error.message);
+        if (error) return alert('Erro: ' + error.message);
         populateForm(data);
       }
     }
 
-    function populateForm(q){
+    function populateForm(q) {
       document.getElementById('topic').value = q.topic || '';
       document.getElementById('text').value = q.text || '';
       document.getElementById('options').value = (Array.isArray(q.options) ? q.options.join('\n') : (q.options || ''));
@@ -674,28 +705,28 @@
       document.getElementById('btn-save').setAttribute('data-edit-id', q.id);
     }
 
-    document.getElementById('btn-clear').addEventListener('click', ()=>{
+    document.getElementById('btn-clear').addEventListener('click', () => {
       document.getElementById('btn-save').removeAttribute('data-edit-id');
-      document.getElementById('topic').value='';document.getElementById('text').value='';document.getElementById('options').value='';document.getElementById('correct_index').value='';document.getElementById('explanation').value='';document.getElementById('sort_order').value='';document.getElementById('active').checked=true;
+      document.getElementById('topic').value = ''; document.getElementById('text').value = ''; document.getElementById('options').value = ''; document.getElementById('correct_index').value = ''; document.getElementById('explanation').value = ''; document.getElementById('sort_order').value = ''; document.getElementById('active').checked = true;
     });
 
-    async function saveQuestion(){
+    async function saveQuestion() {
       const editId = document.getElementById('btn-save').getAttribute('data-edit-id');
       const topic = document.getElementById('topic').value.trim();
       const text = document.getElementById('text').value.trim();
-      const options = document.getElementById('options').value.split('\n').map(s=>s.trim()).filter(Boolean);
-      const correct_index = parseInt(document.getElementById('correct_index').value,10);
+      const options = document.getElementById('options').value.split('\n').map(s => s.trim()).filter(Boolean);
+      const correct_index = parseInt(document.getElementById('correct_index').value, 10);
       const explanation = document.getElementById('explanation').value.trim();
-      const sort_order = parseInt(document.getElementById('sort_order').value,10) || 0;
+      const sort_order = parseInt(document.getElementById('sort_order').value, 10) || 0;
       const active = !!document.getElementById('active').checked;
       if (!topic || !text || options.length < 2 || !Number.isInteger(correct_index)) return alert('Preencha todos os campos corretamente (opções >=2, índice correto inteiro).');
       const payload = { topic, text, options, correct_index, explanation, active, sort_order };
-      if (editId){
+      if (editId) {
         const { error } = await supabaseClient.from('questions').update(payload).eq('id', editId).select();
-        if (error) return alert('Erro atualizando: '+error.message);
+        if (error) return alert('Erro atualizando: ' + error.message);
       } else {
         const { error } = await supabaseClient.from('questions').insert([payload]).select();
-        if (error) return alert('Erro inserindo: '+error.message);
+        if (error) return alert('Erro inserindo: ' + error.message);
       }
       document.getElementById('btn-save').removeAttribute('data-edit-id');
       loadQuestions();
@@ -707,4 +738,5 @@
     syncAuthState();
   </script>
 </body>
+
 </html>
